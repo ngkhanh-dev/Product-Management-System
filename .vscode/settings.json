@@ -1,9 +1,15 @@
 {
     "cSpell.words": [
+        "aligncenter",
+        "alignleft",
+        "backcolor",
+        "blobid",
         "checkall",
         "cloudinary",
         "fieldname",
+        "formatselect",
         "sider",
-        "streamifier"
+        "streamifier",
+        "tinymce"
     ]
 }
