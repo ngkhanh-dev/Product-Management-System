@@ -20,7 +20,7 @@ const port = process.env.PORT;
 
 //Nhúng pug
 app.set("view engine", "pug");
-app.set("views", "./views");
+app.set("views", `${__dirname}/views`);
 
 //Nhúng express-flash
 app.use(cookieParser("keyboard cat"));
@@ -28,7 +28,7 @@ app.use(session({ cookie: { maxAge: 60000 } }));
 app.use(flash());
 
 // Nhúng file tĩnh
-app.use(express.static("public"));
+app.use(express.static(`${__dirname}/public`));
 
 //Nhúng Method-override
 app.use(methodOverride("_method"));
