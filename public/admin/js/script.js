@@ -1,6 +1,5 @@
 // Button Status
 const listButtonStatus = document.querySelectorAll("[button-status]");
-
 if (listButtonStatus.length > 0) {
     listButtonStatus.forEach((button) => {
         button.addEventListener("click", () => {
@@ -23,7 +22,6 @@ if (listButtonStatus.length > 0) {
 
 // Form Search
 const searchForm = document.querySelector("#form-search");
-
 if (searchForm) {
     searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -44,7 +42,6 @@ if (searchForm) {
 
 // Pagination
 const listButtonPagination = document.querySelectorAll("[button-pagination]");
-
 if (listButtonPagination.length) {
     listButtonPagination.forEach((button) => {
         button.addEventListener("click", () => {
@@ -82,7 +79,6 @@ if (listButtonChangeStatus.length > 0) {
 
 // Checkbox-multi
 const checkboxMulti = document.querySelector("[checkbox-multi]");
-
 if (checkboxMulti) {
     const inputCheckAll = checkboxMulti.querySelector(
         "input[name='check-all']"
@@ -111,7 +107,6 @@ if (checkboxMulti) {
 
 // Form-change-multi
 const formChangeMulti = document.querySelector("[form-change-multi]");
-
 if (formChangeMulti) {
     formChangeMulti.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -198,7 +193,6 @@ if (listButtonDelete.length > 0) {
 
 // Button-trash
 const listButtonTrash = document.querySelectorAll("[button-trash]");
-
 if (listButtonTrash.length > 0) {
     const formDeleteTrash = document.querySelector("[form-delete-trash]");
     const path = formDeleteTrash.getAttribute("data-path");
@@ -261,3 +255,68 @@ if (sort) {
     }
 }
 // End Sort
+
+// Table permissions
+const buttonSubmitPermissions = document.querySelector(
+    "[button-submit-permissions]"
+);
+if (buttonSubmitPermissions) {
+    buttonSubmitPermissions.addEventListener("click", () => {
+        const roles = [];
+        const tablePermissions = document.querySelector("[table-permissions]");
+        const rows = tablePermissions.querySelectorAll("tbody tr[data-name]");
+
+        rows.forEach((row, index) => {
+            const dataName = row.getAttribute("data-name");
+            const inputs = row.querySelectorAll("input");
+
+            if (dataName == "id") {
+                inputs.forEach((input) => {
+                    const id = input.value;
+                    roles.push({
+                        id: id,
+                        permissions: [],
+                    });
+                });
+            } else {
+                inputs.forEach((input, index) => {
+                    const inputChecked = input.checked;
+                    if (inputChecked) {
+                        roles[index].permissions.push(dataName);
+                    }
+                });
+            }
+        });
+
+        if (roles.length > 0) {
+            const formChangePermissions = document.querySelector(
+                "[form-change-permissions]"
+            );
+            const inputRoles = formChangePermissions.querySelector(
+                "input[name='roles']"
+            );
+            inputRoles.value = JSON.stringify(roles);
+            formChangePermissions.submit();
+        }
+    });
+}
+// End Table permissions
+
+// Data default Table Permissions
+const dataRecords = document.querySelector("[data-records]");
+if (dataRecords) {
+    const records = JSON.parse(dataRecords.getAttribute("data-records"));
+    const tablePermissions = document.querySelector("[table-permissions]");
+
+    records.forEach((record, index) => {
+        const permissions = record.permissions;
+        permissions.forEach((permission) => {
+            const row = tablePermissions.querySelector(
+                `tbody tr[data-name=${permission}]`
+            );
+            const inputArray = row.querySelectorAll("input");
+            inputArray[index].checked = true;
+        });
+    });
+}
+// End Data default Table Permissions

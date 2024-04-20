@@ -8,8 +8,10 @@
         "cloudinary",
         "fieldname",
         "formatselect",
+        "khóa",
         "sider",
         "streamifier",
         "tinymce"
-    ]
+    ],
+    "editor.tabSize": 2
 }
