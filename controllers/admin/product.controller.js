@@ -1,5 +1,6 @@
 const Product = require("../../models/product.model");
 const ProductCategory = require("../../models/product-category.model");
+const Account = require("../../models/account.model");
 const filterHelper = require("../../helpers/filter.helper");
 const paginationHelper = require("../../helpers/pagination.helper");
 const createTreeHelper = require("../../helpers/createTree.helper");
@@ -47,6 +48,14 @@ module.exports.index = async (req, res) => {
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
         .sort(sort);
+
+    for (const product of products) {
+        const createdBy = await Account.findOne({
+            _id: product.createdBy,
+        });
+
+        product.createdByFullName = createdBy?.fullName;
+    }
 
     res.render("admin/pages/products/index", {
         pageTitle: "Trang tổng quan",
@@ -101,6 +110,8 @@ module.exports.changeMulti = async (req, res) => {
                 },
                 {
                     deleted: true,
+                    deletedAt: new Date(),
+                    deletedBy: res.locals.user.id,
                 }
             );
             req.flash("success", "Xóa thành công sản phẩm");
@@ -148,6 +159,8 @@ module.exports.deleteItem = async (req, res) => {
         },
         {
             deleted: true,
+            deletedAt: new Date(),
+            deletedBy: res.locals.user.id,
         }
     );
 
@@ -180,6 +193,8 @@ module.exports.createPost = async (req, res) => {
         const countProducts = await Product.countDocuments();
         req.body.position = countProducts + 1;
     }
+
+    req.body.createdBy = res.locals.user.id;
 
     const record = new Product(req.body);
     await record.save();
@@ -218,6 +233,7 @@ module.exports.editPatch = async (req, res) => {
     req.body.discountPercentage = parseInt(req.body.discountPercentage);
     req.body.stock = parseInt(req.body.stock);
     req.body.position = parseInt(req.body.position);
+    req.body.updatedBy = res.locals.user.id;
 
     await Product.updateOne(
         {

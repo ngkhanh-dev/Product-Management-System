@@ -22,6 +22,10 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        deletedAt: Date,
+        deletedBy: String,
+        createdBy: String,
+        updatedBy: String,
     },
     {
         timestamps: true,
