@@ -7,8 +7,8 @@ include ../../mixins/alert.pug
 block main
   +alert-success()
 
-  h1(class="mb-4") Danh sách sản phẩm
-  a(href)
+  h1(class="mb-4") Thùng rác
+
   .card.mb-3
   .card-header Bộ lọc và Tìm kiếm
   .card-body
@@ -47,17 +47,15 @@ block main
       .row
         .col-8
           form(
-            action=`/${prefixAdmin}/products/change-multi?_method=PATCH`
+            action=`/${prefixAdmin}/products/trash/change-multi?_method=PATCH`
             method="POST"
             form-change-multi
           ) 
             .d-flex.align-items-start
               .form-group
                 select(name="type" class="form-control")
-                  option(value="active") Hoạt động
-                  option(value="inactive") Dừng hoạt động
-                  option(value="change-position") Thay đổi vị trí
-                  option(value="delete-all") Xóa tất cả
+                  option(value="restore") Khôi phục
+                  option(value="delete") Xóa vĩnh viễn
               .form-group.d-none
                 input(
                   type="text"
@@ -67,10 +65,6 @@ block main
                 )
               button(type="submit" class="btn btn-primary") Áp dụng
         .col-4
-          a(
-            href=`/${prefixAdmin}/products/create`
-            class="btn btn-outline-success"
-          ) + Thêm mới
 
       table(
         class="table table-hover table-sm"
@@ -86,7 +80,7 @@ block main
             th Giá
             th Vị trí
             th Trạng thái
-            th Tạo bởi
+            th Xóa bởi
             th Hành động
 
         tbody
@@ -128,37 +122,41 @@ block main
                     class="badge badge-danger"
                   ) Dừng hoạt động 
               td 
-                div #{item.createdByFullName}
-                div #{moment(item.createdAt).format("DD/MM/YYYY HH:mm")}
+                div #{item.deletedByFullName}
+                div #{moment(item.deletedAt).format("DD/MM/YYYY HH:mm")}
               td
-                a(
-                  href=`/${prefixAdmin}/products/edit/${item.id}`
+                button(
                   class="btn btn-warning btn-sm"
-                ) Sửa
+                  button-trash-restore 
+                  data-id=item.id
+                ) Khôi phục
                 button(
                   class="btn btn-danger btn-sm ml-1"
                   button-delete 
                   data-id=item.id
-                ) Xóa
+                ) Xóa vĩnh viễn
                 a(
-                  href=`/${prefixAdmin}/products/detail/${item.id}`
+                  href=`/${prefixAdmin}/products/trash/detail/${item.id}`
                   class="btn btn-info btn-sm ml-1"
                 ) Chi tiết
 
   +pagination(objectPagination)
 
-  a(href=`/admin/products/trash`) 
-    img(src="data:image/jpeg;base64,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")
-  
   form(
     form-change-status
     method="POST"
     action=""
-    data-path=`/${prefixAdmin}/products/change-status`
+    data-path=`/${prefixAdmin}/products/trash/change-status`
+  )
+  form(
+    form-trash-restore
+    method="POST"
+    action=""
+    data-path=`/${prefixAdmin}/products/trash/restore`
   )
   form(
     form-delete-item
     method="POST"
     action=""
-    data-path=`/${prefixAdmin}/products/delete`
+    data-path=`/${prefixAdmin}/products/trash/delete`
   )

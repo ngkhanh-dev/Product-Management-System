@@ -12,6 +12,7 @@ if (listButtonStatus.length > 0) {
             } else {
                 url.searchParams.delete("status");
             }
+            url.searchParams.delete("page");
 
             location.href = url.href;
         });
@@ -34,6 +35,8 @@ if (searchForm) {
         } else {
             url.searchParams.delete("keyword");
         }
+        url.searchParams.delete("page");
+
         location.href = url.href;
     });
 }
@@ -191,23 +194,24 @@ if (listButtonDelete.length > 0) {
 }
 // End Button-delete
 
-// Button-trash
-const listButtonTrash = document.querySelectorAll("[button-trash]");
-if (listButtonTrash.length > 0) {
-    const formDeleteTrash = document.querySelector("[form-delete-trash]");
-    const path = formDeleteTrash.getAttribute("data-path");
-
-    listButtonTrash.forEach((button) => {
+// Button-trash-restore
+const listButtonTrashRestore = document.querySelectorAll(
+    "[button-trash-restore]"
+);
+if (listButtonTrashRestore.length > 0) {
+    const formTrashRestore = document.querySelector("[form-trash-restore]");
+    const path = formTrashRestore.getAttribute("data-path");
+    listButtonTrashRestore.forEach((button) => {
         button.addEventListener("click", () => {
             const id = button.getAttribute("data-id");
-            const action = `${path}/${id}?_method=DELETE`;
+            const action = `${path}/${id}?_method=PATCH`;
 
-            formDeleteTrash.action = action;
-            formDeleteTrash.submit();
+            formTrashRestore.action = action;
+            formTrashRestore.submit();
         });
     });
 }
-// End Button-trash
+// End Button-trash-restore
 
 // Upload-image
 const uploadImage = document.querySelector("[upload-image]");

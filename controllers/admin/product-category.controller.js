@@ -101,3 +101,25 @@ module.exports.editPatch = async (req, res) => {
 
     res.redirect("back");
 };
+
+// [GET] /{prefixAdmin}/products-category/detail/:id
+module.exports.detail = async (req, res) => {
+    const id = req.params.id;
+
+    const productCategory = await ProductCategory.findOne({
+        _id: id,
+        deleted: false,
+    });
+
+    const parentItem = await ProductCategory.findOne({
+        _id: productCategory.parent_id,
+        deleted: false,
+    });
+
+    productCategory.parent = parentItem.title;
+
+    res.render("admin/pages/products-category/detail.pug", {
+        pageTitle: `Sản phẩm: ${productCategory.title}`,
+        productCategory: productCategory,
+    });
+};

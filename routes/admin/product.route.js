@@ -19,9 +19,11 @@ router.patch("/change-status/:status/:id", controller.changeStatus);
 
 router.patch("/change-multi", controller.changeMulti);
 
-router.delete("/delete/:id", controller.deleteItemForever);
+router.delete("/delete/:id", controller.deleteItem);
 
-router.delete("/trash/:id", controller.deleteItem);
+router.get("/trash", controller.trash);
+
+router.patch("/trash/restore/:id", controller.restoreTrashItem);
 
 router.get("/create", controller.create);
 

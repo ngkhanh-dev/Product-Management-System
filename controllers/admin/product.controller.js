@@ -139,17 +139,6 @@ module.exports.changeMulti = async (req, res) => {
 };
 
 // [DELETE] /{prefixAdmin}/products/delete/:id
-module.exports.deleteItemForever = async (req, res) => {
-    const id = req.params.id;
-
-    await Product.deleteOne({
-        _id: id,
-    });
-
-    res.redirect("back");
-};
-
-// [DELETE-TRASH] /{prefixAdmin}/products/trash
 module.exports.deleteItem = async (req, res) => {
     const id = req.params.id;
 
@@ -165,6 +154,83 @@ module.exports.deleteItem = async (req, res) => {
     );
 
     res.redirect("back");
+};
+
+// [GET] /{prefixAdmin}/products/trash/
+module.exports.trash = async (req, res) => {
+    const find = {
+        deleted: true,
+    };
+
+    // Filter
+    const filterStatus = filterHelper(req);
+
+    if (req.query.status) {
+        find.status = req.query.status;
+    }
+    //End Filter
+
+    // Search
+    if (req.query.keyword) {
+        const title = new RegExp(req.query.keyword, "i");
+        find.title = title;
+    }
+    // End Search
+
+    // Sort
+    const sort = {};
+
+    if (req.query.sortKey && req.query.sortValue) {
+        const sortKey = req.query.sortKey;
+        const sortValue = req.query.sortValue;
+        sort[sortKey] = sortValue;
+    } else {
+        sort.position = "desc";
+    }
+    // End Sort
+
+    // Pagination
+    const countRecords = await Product.countDocuments(find);
+    const objectPagination = paginationHelper(req, countRecords);
+    // End Pagination
+
+    const products = await Product.find(find)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip)
+        .sort(sort);
+
+    for (const product of products) {
+        const deletedBy = await Account.findOne({
+            _id: product.deletedBy,
+        });
+
+        product.deletedByFullName = deletedBy?.fullName;
+    }
+
+    res.render("admin/pages/products/trash", {
+        pageTitle: "Trang tổng quan",
+        products: products,
+        filterStatus: filterStatus,
+        keyword: req.query.keyword,
+        objectPagination: objectPagination,
+    });
+};
+
+// [PATCH] /{prefixAdmin}/products/trash/restore/:id
+module.exports.restoreTrashItem = async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    await Product.updateOne(
+        {
+            _id: id,
+        },
+        {
+            deleted: false,
+            updatedBy: res.locals.user.id,
+        }
+    );
+
+    res.redirect(`back`);
 };
 
 // [GET] /{prefixAdmin}/products/create
