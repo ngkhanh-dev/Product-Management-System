@@ -6,7 +6,7 @@ const paginationHelper = require("../../helpers/pagination.helper");
 const createTreeHelper = require("../../helpers/createTree.helper");
 const systemConfig = require("../../config/system");
 
-// [GET] /{prefixAdmin}/products/
+// [GET] /products/
 module.exports.index = async (req, res) => {
     const find = {
         deleted: false,
@@ -66,7 +66,7 @@ module.exports.index = async (req, res) => {
     });
 };
 
-// [PATCH] /{prefixAdmin}/products/change-status/:status/:id
+// [PATCH] /products/change-status/:status/:id
 module.exports.changeStatus = async (req, res) => {
     const status = req.params.status;
     const id = req.params.id;
@@ -82,7 +82,7 @@ module.exports.changeStatus = async (req, res) => {
     res.redirect("back");
 };
 
-// [PATCH] /{prefixAdmin}/products/change-multi
+// [PATCH] /products/change-multi
 module.exports.changeMulti = async (req, res) => {
     console.log(req.body);
     const type = req.body.type;
@@ -138,7 +138,7 @@ module.exports.changeMulti = async (req, res) => {
     res.redirect("back");
 };
 
-// [DELETE] /{prefixAdmin}/products/delete/:id
+// [DELETE] /products/delete/:id
 module.exports.deleteItem = async (req, res) => {
     const id = req.params.id;
 
@@ -156,7 +156,7 @@ module.exports.deleteItem = async (req, res) => {
     res.redirect("back");
 };
 
-// [GET] /{prefixAdmin}/products/trash/
+// [GET] /products/trash/
 module.exports.trash = async (req, res) => {
     const find = {
         deleted: true,
@@ -216,7 +216,7 @@ module.exports.trash = async (req, res) => {
     });
 };
 
-// [PATCH] /{prefixAdmin}/products/trash/restore/:id
+// [PATCH] /products/trash/restore/:id
 module.exports.restoreTrashItem = async (req, res) => {
     const id = req.params.id;
     console.log(id);
@@ -233,7 +233,7 @@ module.exports.restoreTrashItem = async (req, res) => {
     res.redirect(`back`);
 };
 
-// [GET] /{prefixAdmin}/products/create
+// [GET] /products/create
 module.exports.create = async (req, res) => {
     const category = await ProductCategory.find({
         deleted: false,
@@ -247,7 +247,7 @@ module.exports.create = async (req, res) => {
     });
 };
 
-// [POST] /{prefixAdmin}/products/create
+// [POST] /products/create
 module.exports.createPost = async (req, res) => {
     req.body.price = parseInt(req.body.price);
     req.body.discountPercentage = parseInt(req.body.discountPercentage);
@@ -269,7 +269,7 @@ module.exports.createPost = async (req, res) => {
     res.redirect(`/${systemConfig.prefixAdmin}/products`);
 };
 
-// [GET] /{prefixAdmin}/products/edit/:id
+// [GET] /products/edit/:id
 module.exports.edit = async (req, res) => {
     const id = req.params.id;
 
@@ -291,7 +291,7 @@ module.exports.edit = async (req, res) => {
     });
 };
 
-// [PATCH] /{prefixAdmin}/products/edit/:id
+// [PATCH] /products/edit/:id
 module.exports.editPatch = async (req, res) => {
     const id = req.params.id;
 
@@ -313,7 +313,7 @@ module.exports.editPatch = async (req, res) => {
     res.redirect(`/${systemConfig.prefixAdmin}/products`);
 };
 
-// [GET] /{prefixAdmin}/products/detail/:id
+// [GET] /products/detail/:id
 module.exports.detail = async (req, res) => {
     const id = req.params.id;
 
