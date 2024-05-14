@@ -1,5 +1,6 @@
 extends ../../layouts/default.pug
 
+
 block main
 
   if(role.permissions.includes("products-category_view"))
@@ -81,3 +82,15 @@ block main
                     button-delete
                     data-id=item.id
                   ) Xóa
+  form(
+    form-delete-item
+    method="POST"
+    action=""
+    data-path=`/${prefixAdmin}/products-category/delete`
+  )
+  form(
+    form-change-status
+    method="POST"
+    action=""
+    data-path=`/${prefixAdmin}/products/change-status`
+  )

@@ -2,7 +2,7 @@ const ProductCategory = require("../../models/product-category.model");
 const createTreeHelper = require("../../helpers/createTree.helper");
 const systemConfig = require("../../config/system");
 
-// [GET] /{prefixAdmin}/products-category/
+// [GET] /products-category/
 module.exports.index = async (req, res) => {
     const find = {
         deleted: false,
@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
     });
 };
 
-// [GET] /{prefixAdmin}/products-category/create
+// [GET] /products-category/create
 module.exports.create = async (req, res) => {
     const find = {
         deleted: false,
@@ -32,7 +32,7 @@ module.exports.create = async (req, res) => {
     });
 };
 
-// [POST] /{prefixAdmin}/products-category/create
+// [POST] /products-category/create
 module.exports.createPost = async (req, res) => {
     if (!res.locals.role.permissions.includes("products-category_create")) {
         res.send("Không có quyền truy cập.");
@@ -52,7 +52,7 @@ module.exports.createPost = async (req, res) => {
     res.redirect("back");
 };
 
-// [GET] /{prefixAdmin}/products-category/edit/:id
+// [GET] /products-category/edit/:id
 module.exports.edit = async (req, res) => {
     try {
         const find = {
@@ -80,7 +80,7 @@ module.exports.edit = async (req, res) => {
     }
 };
 
-// [GET] /{prefixAdmin}/products-category/edit/:id
+// [GET] /products-category/edit/:id
 module.exports.editPatch = async (req, res) => {
     const id = req.params.id;
 
@@ -102,24 +102,52 @@ module.exports.editPatch = async (req, res) => {
     res.redirect("back");
 };
 
-// [GET] /{prefixAdmin}/products-category/detail/:id
+// [GET] /products-category/detail/:id
 module.exports.detail = async (req, res) => {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
 
-    const productCategory = await ProductCategory.findOne({
-        _id: id,
-        deleted: false,
-    });
+        const productCategory = await ProductCategory.findOne({
+            _id: id,
+            deleted: false,
+        });
 
-    const parentItem = await ProductCategory.findOne({
-        _id: productCategory.parent_id,
-        deleted: false,
-    });
+        if (productCategory.parent_id) {
+            const parentItem = await ProductCategory.findOne({
+                _id: productCategory.parent_id,
+                deleted: false,
+            });
 
-    productCategory.parent = parentItem.title;
+            productCategory.parent = parentItem.title;
+        } else {
+            productCategory.parent = "";
+        }
 
-    res.render("admin/pages/products-category/detail.pug", {
-        pageTitle: `Sản phẩm: ${productCategory.title}`,
-        productCategory: productCategory,
-    });
+        res.render("admin/pages/products-category/detail.pug", {
+            pageTitle: `Sản phẩm: ${productCategory.title}`,
+            productCategory: productCategory,
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+// [DELETE] /products-category/detail/:id
+module.exports.deleteItem = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        await ProductCategory.updateOne(
+            {
+                _id: id,
+            },
+            {
+                deleted: true,
+            }
+        );
+
+        res.redirect("back");
+    } catch (error) {
+        res.redirect(`/${prefixAdmin}/dashboard`);
+    }
 };

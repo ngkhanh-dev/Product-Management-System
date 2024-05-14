@@ -178,8 +178,10 @@ const listButtonDelete = document.querySelectorAll("[button-delete]");
 if (listButtonDelete.length > 0) {
     const formDeleteItem = document.querySelector("[form-delete-item]");
     const path = formDeleteItem.getAttribute("data-path");
+    console.log("hi");
     listButtonDelete.forEach((button) => {
         button.addEventListener("click", () => {
+            console.log("OK");
             const isConfirm = confirm("Bạn có chắc chắn muốn xóa không?");
 
             if (isConfirm) {
