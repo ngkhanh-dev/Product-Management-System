@@ -1,3 +1,5 @@
+import * as Popper from "https://cdn.jsdelivr.net/npm/@popperjs/core@^2/dist/esm/index.js";
+
 // show-alert
 const showAlert = document.querySelector("[show-alert]");
 if (showAlert) {
@@ -61,6 +63,7 @@ if (formSendData) {
         if (content) {
             socket.emit("CLIENT_SEND_MESSAGE", content);
             formSendData.content.value = "";
+            socket.emit("CLIENT_SEND_TYPING", "hidden");
         }
     });
 }
@@ -88,7 +91,9 @@ socket.on("SERVER_RETURN_MESSAGE", (data) => {
       <div class="inner-content">${data.content}</div>
     `;
 
-    body.appendChild(div);
+    const elementListTyping = body.querySelector(".inner-list-typing");
+
+    body.insertBefore(div, elementListTyping);
 });
 // End SERVER_RETURN_MESSAGE
 
@@ -98,3 +103,73 @@ if (chatBody) {
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 // End Scroll Chat To Bottom
+
+// Show Tooltip emoji
+const buttonIcon = document.querySelector("[emoji-pop-up]");
+if (buttonIcon) {
+    const tooltip = document.querySelector(".tooltip");
+    Popper.createPopper(buttonIcon, tooltip);
+    buttonIcon.addEventListener("click", () => {
+        tooltip.classList.toggle("shown");
+    });
+}
+// End Show Tooltip emoji
+
+// Emoji-picker
+const emojiPicker = document.querySelector("emoji-picker");
+if (emojiPicker) {
+    const inputBtn = document.querySelector(
+        ".chat .inner-form [name='content']"
+    );
+    emojiPicker.addEventListener(
+        "emoji-click",
+        (event) => (inputBtn.value += event.detail.unicode)
+    );
+}
+// End Emoji-picker
+
+// Typing
+var timeOut;
+const inputChat = document.querySelector(
+    ".chat .inner-form input[name='content']"
+);
+inputChat.addEventListener("keyup", () => {
+    socket.emit("CLIENT_SEND_TYPING", "show");
+    clearTimeout(timeOut);
+
+    timeOut = setTimeout(() => {
+        socket.emit("CLIENT_SEND_TYPING", "hidden");
+    }, 3000);
+});
+// End Typing
+
+// SERVER_RETURN_TYPING
+const elementListTyping = document.querySelector(".chat .inner-list-typing");
+socket.on("SERVER_RETURN_TYPING", (data) => {
+    if (data.type == "show") {
+        const existBoxTyping = elementListTyping.querySelector(
+            `.box-typing[user-id="${data.userId}"]`
+        );
+
+        if (!existBoxTyping) {
+            const boxTyping = document.createElement("div");
+            boxTyping.classList.add("box-typing");
+            boxTyping.setAttribute("user-id", data.userId);
+            boxTyping.innerHTML = `
+                <div class="inner-name">${data.fullName}</div>
+                <div class="inner-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            elementListTyping.appendChild(boxTyping);
+        }
+    } else {
+        const existBoxRemove = elementListTyping.querySelector(
+            `.box-typing[user-id="${data.userId}"]`
+        );
+        if (existBoxRemove) elementListTyping.removeChild(existBoxRemove);
+    }
+});
+// End SERVER_RETURN_TYPING

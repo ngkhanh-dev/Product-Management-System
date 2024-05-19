@@ -18,9 +18,13 @@ html
     script(src="/tinymce/tinymce.min.js") 
     script(src="/admin/js/tinymce-config.js") 
 
+    //- Emoji picker
+    script(type="module", src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js") 
+    //- End Emoji picker
+
     //- SocketIO
     script(src="/socket.io/socket.io.js")
     script(src="/js/socket.js")
     //- End SocketIO
 
-    script(src="/js/script.js")
+    script(type="module" src="/js/script.js")

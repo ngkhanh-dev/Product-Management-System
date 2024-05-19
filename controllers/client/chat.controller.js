@@ -14,9 +14,6 @@ module.exports.index = async (req, res) => {
 
         // CLIENT_SEND_MESSAGE
         socket.on("CLIENT_SEND_MESSAGE", async (content) => {
-            console.log(userId);
-            console.log(content);
-
             // Lưu tin nhắn vào database
             const chat = new Chat({
                 user_id: userId,
@@ -32,6 +29,15 @@ module.exports.index = async (req, res) => {
                 user_id: userId,
                 content: content,
                 fullName: userFullName,
+            });
+        });
+
+        // SERVER_RETURN_TYPING
+        socket.on("CLIENT_SEND_TYPING", (type) => {
+            socket.broadcast.emit("SERVER_RETURN_TYPING", {
+                userId: userId,
+                fullName: userFullName,
+                type: type,
             });
         });
 
