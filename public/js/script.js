@@ -78,6 +78,8 @@ if (formSendData) {
                 content: content,
                 images: images,
             });
+            formSendData.content.value = "";
+            socket.emit("CLIENT_SEND_TYPING", "hidden");
         }
 
         upload.resetPreviewPanel();
@@ -166,14 +168,16 @@ var timeOut;
 const inputChat = document.querySelector(
     ".chat .inner-form input[name='content']"
 );
-inputChat.addEventListener("keyup", () => {
-    socket.emit("CLIENT_SEND_TYPING", "show");
-    clearTimeout(timeOut);
+if (inputChat) {
+    inputChat.addEventListener("keyup", () => {
+        socket.emit("CLIENT_SEND_TYPING", "show");
+        clearTimeout(timeOut);
 
-    timeOut = setTimeout(() => {
-        socket.emit("CLIENT_SEND_TYPING", "hidden");
-    }, 3000);
-});
+        timeOut = setTimeout(() => {
+            socket.emit("CLIENT_SEND_TYPING", "hidden");
+        }, 3000);
+    });
+}
 // End Typing
 
 // SERVER_RETURN_TYPING
